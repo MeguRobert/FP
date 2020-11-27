@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30523.141
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Multimi", "Multimi\Multimi.csproj", "{AFED0EF3-E088-4FEA-9F52-BF6C5CD724D8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AFED0EF3-E088-4FEA-9F52-BF6C5CD724D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AFED0EF3-E088-4FEA-9F52-BF6C5CD724D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AFED0EF3-E088-4FEA-9F52-BF6C5CD724D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AFED0EF3-E088-4FEA-9F52-BF6C5CD724D8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4ED5C1A3-3C09-44F1-BE5D-DE0507BBD4D2}
+	EndGlobalSection
+EndGlobal
