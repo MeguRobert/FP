@@ -17,14 +17,50 @@ namespace Operatii_cu_numere_mari
         {
             GetData();
             MakeVector(ref v1, n);
-            //View(v1);
             
             GetData();
             MakeVector(ref v2, n);
-            //View(v2);
-            Console.WriteLine();
-            View(GestionareSuma(v1, v2));
 
+            Console.WriteLine("******suma celor doua numere******");
+            View(GestionareSuma(v1, v2));
+            /*Console.WriteLine("Cu cat sa fie inmultit numarul 1.? x=");
+            View(InmultireCuScalar(v1,int.Parse(Console.ReadLine())));*/
+            Console.WriteLine("vectorul 1 * vectorul 2 =");
+            View(InmultireVectori(v1,v2));
+
+
+        }
+
+        private static int[] InmultireVectori(int[] v1, int[] v2)
+        {
+            int j = 1, scalar = v2[v2.Length - 1];
+            int[] vSum = InmultireCuScalar(v1, scalar ); 
+            for (int i = v2.Length - 2; i >= 0; i--)
+            {
+                scalar = v2[i] * (int)Math.Pow(10, j); //AICI TREBUIE MODIFICAT!!
+                vSum = GestionareSuma(vSum , InmultireCuScalar(v1, scalar));
+                j++;
+            }
+            return vSum;
+        }
+
+        private static int[] InmultireCuScalar(int[] v1, int scalar)
+        {
+            int[] v;
+            if (scalar!=0)
+            {
+                v = v1;
+                for (int i = 1; i < scalar; i++)
+                {
+                    v = Suma(v, v1);
+                }
+            }
+            else
+            {
+                v = new int[1];
+                v[0] = 0;
+            }
+            return v;
         }
 
         private static int[] GestionareSuma(int[] v1, int[] v2)
@@ -41,25 +77,33 @@ namespace Operatii_cu_numere_mari
 
         private static int[] Suma(int[] v1, int[] v2)
         {
-            int max, min, s, k;
+            int max, min, sum, k;
             max = v1.Length;
             min = v2.Length;
+            k = min;//contorul pentru v2
             int[] v = new int[max + 1];
+            int[] vtemp = new int[max];
             int trans = 0;
             for (int i = max - 1; i >= 0; i--)
             {
-                k = i - (max - min);
-                s = 0;
-                s += v1[i];
+                k--;
+                sum = v1[i];
                 if (k >= 0)
-                    s += v2[k];
-
-                s += trans;
-                v[i + 1] = s;
-                trans = v[i + 1] / 10;
-                v[i + 1] %= 10;
+                    sum += v2[k];      //adaugam elementele vectorului pana cand avem ce adauga :) (Exclude overflow)
+                sum += trans;          //adaugam transportul acumulat din pozitia anterioara
+                v[i + 1] = sum;        //punem suma elementelor in vectorul final
+                trans = v[i + 1] / 10; //transportul va fi intotdeauna egal cu cifra zecilor
+                v[i + 1] %= 10;        //eliminam valoarea transportul din pozitia curenta a vetorului
             }
-            v[0] = trans;
+            v[0] = trans;              //adaugam ultimul transport, daca este 
+            if (v[0]==0)
+            {
+                for (int i = 1; i < v.Length; i++)
+                {
+                    vtemp[i - 1] = v[i];
+                }
+                v = vtemp;
+            }
             return v;
         }
 
@@ -71,11 +115,7 @@ namespace Operatii_cu_numere_mari
 
         private static void View(int[] v)
         {
-            if (v[0]!=0)
-            {
-                Console.Write($"{v[0]}");
-            }
-            for (int i = 1; i < v.Length; i++)
+            for (int i = 0; i < v.Length; i++)
             {
                 Console.Write($"{v[i]}");
             }
