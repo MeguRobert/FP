@@ -18,22 +18,110 @@ namespace Operatii_cu_numere_mari
 
         static void Main(string[] args)
         {
-            /* GetData();
-             MakeVector(ref v1, n);
+            Write();
+            Switch(operation);
+        }
 
-             GetData();
-             MakeVector(ref v2, n);
+        private static void Switch(char operation)
+        {
+            if (operation == 'f')
+            {
+                Fact();
+            }
+            else if (operation == 'r')
+            {
+                SquareRoot();
+            }
+            else
+            {
+                Gets();
+                switch (operation)
+                {
+                    case '+':
+                        Addition();
+                        break;
+                    case '-':
+                        Subtraction();
+                        break;
+                    case '*':
+                        Multiplication();
+                        break;
+                    case '/':
+                        Division();
+                        break;
+                    case 'p':
+                        Power();
+                        break;
+                    default:
 
-             Console.WriteLine("******suma celor doua numere******");
-             View(GestionareSuma(v1, v2));
-
-             Console.WriteLine("vectorul 1 * vectorul 2 =");
-             View(InmultireVectori(v1,v2));*/
-
+                        break;
+                }
+            }
             
-            Fact();
-            
+        }
 
+        private static void SquareRoot()
+        {
+            GetData();
+            MakeVector(ref v1, n);
+
+            Console.WriteLine("****** Radacina patrata al numarului ******");
+            //View(InmultireVectori(v1, v2));
+        }
+
+        private static void Power()
+        {
+            Console.WriteLine("****** Puterea celor doua numere ******");
+            View(Putere(v1, v2));
+        }
+
+        
+
+        private static void Division()
+        {
+            Console.WriteLine("****** Catul impartiri ******");
+            //View(InmultireVectori(v1, v2));
+        }
+
+        private static void Multiplication()
+        {
+            Console.WriteLine("****** Produsul celor doua numere ******");
+            View(InmultireVectori(v1, v2));
+        }
+
+        private static void Subtraction()
+        {
+            Console.WriteLine("****** Diferenta celor doua numere ******");
+            //View(GestionareDiferenta(v1, v2));
+        }
+
+        private static void Addition()
+        {
+            Console.WriteLine("****** suma celor doua numere ******");
+            View(GestionareSuma(v1, v2));
+        }
+
+        private static void Gets()
+        {
+            GetData();
+            MakeVector(ref v1, n);
+            GetData();
+            MakeVector(ref v2, n);
+        }
+
+        private static void Write()
+        {
+            Console.WriteLine("Acesta este un program care poate efectua operatii cu numere mari");
+            Console.WriteLine("Care operatie doresti sa fie executat?");
+            Console.WriteLine("+   adaugare");
+            Console.WriteLine("-   scadere  ");
+            Console.WriteLine("*   inmultire ");
+            Console.WriteLine("/   impartie ");
+            Console.WriteLine("p   ridicare la putere r ");
+            Console.WriteLine("r   radacina patrata");
+            Console.WriteLine("f   factorial");
+
+            operation = Console.ReadKey().KeyChar;
         }
 
         private static void Fact()
@@ -42,7 +130,6 @@ namespace Operatii_cu_numere_mari
             Console.WriteLine("Calculam factorialul numarului x.");
             Console.Write("x=");
             x = int.Parse(Console.ReadLine());
-            //x = 5000;
             sw.Start();
             View(Factorial(x));
             sw.Stop();
@@ -104,6 +191,13 @@ namespace Operatii_cu_numere_mari
             }
             
             return vtemp;
+        }
+
+        private static int[] Putere(int[] v1, int[] v2)
+        {
+
+
+            InmultireVectori(v1, v2)
         }
 
         private static int[] InmultireVectori(int[] v1, int[] v2)
@@ -170,32 +264,38 @@ namespace Operatii_cu_numere_mari
 
         private static int[] Suma(int[] v1, int[] v2)
         {
-            int max, min, sum, k;
+            int max, min, k;
             max = v1.Length;
-            min = v2.Length;
-            k = min;//contorul pentru v2
+            k = v2.Length;    //contorul pentru v2
             int[] v = new int[max + 1];
             int[] vtemp = new int[max];
             int trans = 0;
             for (int i = max - 1; i >= 0; i--)
             {
                 k--;
-                sum = v1[i];
+                v[i + 1] = trans+v1[i];           //adaugam transportul acumulat din pozitia anterioara 
+                                            // si elementele vectorului 2
                 if (k >= 0)
-                    sum += v2[k];      //adaugam elementele vectorului pana cand avem ce adauga :) (Exclude overflow)
-                sum += trans;          //adaugam transportul acumulat din pozitia anterioara
-                v[i + 1] = sum;        //punem suma elementelor in vectorul final
+                    v[i + 1] += v2[k];      //adaugam elementele vectorului 2 pana cand avem ce adauga :) (Exclude overflow)     
+                                       
                 trans = v[i + 1] / 10; //transportul va fi intotdeauna egal cu cifra zecilor
-                v[i + 1] %= 10;        //eliminam valoarea transportul din pozitia curenta a vetorului
+                v[i + 1] %= 10;        //eliminam valoarea transportului din pozitia curenta a vetorului
             }
-            v[0] = trans;              //adaugam ultimul transport, daca este 
-            if (v[0]==0)
+                          
+            if (trans==0)
             {
                 for (int i = 1; i < v.Length; i++)
                 {
                     vtemp[i - 1] = v[i];
                 }
                 v = vtemp;
+                //daca transportul final este 0 trebuie eliminat 0-ul de la inceputul vectorului
+                //si lungimea vectorului devine mai mic cu 1 
+
+            }
+            else
+            {
+                v[0] = trans;   //adaugam ultimul transport, daca nu este 0
             }
             return v;
         }
