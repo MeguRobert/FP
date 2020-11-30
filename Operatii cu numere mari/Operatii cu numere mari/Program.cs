@@ -30,36 +30,37 @@ namespace Operatii_cu_numere_mari
              Console.WriteLine("vectorul 1 * vectorul 2 =");
              View(InmultireVectori(v1,v2));*/
 
-            sw.Start();
+            
             Fact();
-            sw.Stop();
-            TimeSpan ts = sw.Elapsed;
-            string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}", ts.Hours, ts.Minutes, ts.Seconds, ts.Milliseconds / 10);
-            Console.WriteLine($"Runtime " + elapsedTime);
-            Console.WriteLine();
+            
 
         }
 
         private static void Fact()
         {
             Console.WriteLine("FACTORIAL");
-            Console.Write("Calculam factorialul numarului x. x=");
-            //x = int.Parse(Console.ReadLine());
-            x = 5000;
+            Console.WriteLine("Calculam factorialul numarului x.");
+            Console.Write("x=");
+            x = int.Parse(Console.ReadLine());
+            //x = 5000;
+            sw.Start();
             View(Factorial(x));
-
+            sw.Stop();
+            TimeSpan ts = sw.Elapsed;
+            string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}", ts.Hours, ts.Minutes, ts.Seconds, ts.Milliseconds / 10);
+            Console.WriteLine($"Runtime " + elapsedTime);
+            Console.WriteLine();
         }
 
         private static int[] Factorial(int n)
         {
             int nrZerouriLaFinal=0,index;
-            
 
             int[] fact = { 1 };
             int[] vidx;
             for (int i = 1; i <= n ; i++)
             {
-                Console.WriteLine(i);
+                //Console.WriteLine(i);
                 index = i;
                 if (i%10==0)
                 {
@@ -76,19 +77,33 @@ namespace Operatii_cu_numere_mari
                         } 
                     }
                 }
-                vidx = MakeVectorFromIndex();
-                /*
-                int[] vi = { index }; //ScalarToVector;
-                fact = InmultireVectori(fact, vi);
-                */
+                vidx = MakeVectorFromIndex(index);
+                fact = InmultireVectori(fact, vidx);
 
-                fact = InmultireCuScalar(fact, index);
-
-                //View(fact);
             }
             fact = AdaugaZero(fact, nrZerouriLaFinal);
             Console.Write($"{x}! = ");
             return fact;
+        }
+
+        private static int[] MakeVectorFromIndex(int index)
+        {
+            int lenght = 0;
+            int aux = index;
+            int[] vtemp;
+            while (aux != 0)
+            {
+                lenght++;
+                aux /= 10;
+            }
+            vtemp = new int[lenght];
+            while (index != 0)
+            {
+                vtemp[--lenght] = index % 10;
+                index /= 10;
+            }
+            
+            return vtemp;
         }
 
         private static int[] InmultireVectori(int[] v1, int[] v2)
