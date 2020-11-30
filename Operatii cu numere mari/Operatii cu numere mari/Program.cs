@@ -4,31 +4,91 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using System.Diagnostics;
+
 namespace Operatii_cu_numere_mari
 {
     class Program
     {
         static int[] v1,v2;
         static char operation;
-        static int n;
+        static int n,x;
         static string line;
+        static Stopwatch sw = new Stopwatch();
 
         static void Main(string[] args)
         {
-            GetData();
-            MakeVector(ref v1, n);
+            /* GetData();
+             MakeVector(ref v1, n);
+
+             GetData();
+             MakeVector(ref v2, n);
+
+             Console.WriteLine("******suma celor doua numere******");
+             View(GestionareSuma(v1, v2));
+
+             Console.WriteLine("vectorul 1 * vectorul 2 =");
+             View(InmultireVectori(v1,v2));*/
+
+            sw.Start();
+            Fact();
+            sw.Stop();
+            TimeSpan ts = sw.Elapsed;
+            string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}", ts.Hours, ts.Minutes, ts.Seconds, ts.Milliseconds / 10);
+            Console.WriteLine($"Runtime " + elapsedTime);
+            Console.WriteLine();
+
+        }
+
+        private static void Fact()
+        {
+            Console.WriteLine("FACTORIAL");
+            Console.Write("Calculam factorialul numarului x. x=");
+            //x = int.Parse(Console.ReadLine());
+            x = 5000;
+            View(Factorial(x));
+
+        }
+
+        private static int[] Factorial(int n)
+        {
+            int nrZerouriLaFinal=0,index;
             
-            GetData();
-            MakeVector(ref v2, n);
 
-            Console.WriteLine("******suma celor doua numere******");
-            View(GestionareSuma(v1, v2));
-            /*Console.WriteLine("Cu cat sa fie inmultit numarul 1.? x=");
-            View(InmultireCuScalar(v1,int.Parse(Console.ReadLine())));*/
-            Console.WriteLine("vectorul 1 * vectorul 2 =");
-            View(InmultireVectori(v1,v2));
+            int[] fact = { 1 };
+            int[] vidx;
+            for (int i = 1; i <= n ; i++)
+            {
+                Console.WriteLine(i);
+                index = i;
+                if (i%10==0)
+                {
+                    nrZerouriLaFinal++;
+                    index /= 10;
+                    if (i%100==0)
+                    {
+                        nrZerouriLaFinal++;
+                        index /= 10;
+                        if (i%1000==0)
+                        {
+                            nrZerouriLaFinal++;
+                            index /= 10;
+                        } 
+                    }
+                }
+                vidx = MakeVectorFromIndex();
+                /*
+                int[] vi = { index }; //ScalarToVector;
+                fact = InmultireVectori(fact, vi);
+                */
 
+                fact = InmultireCuScalar(fact, index);
 
+                //View(fact);
+            }
+            fact = AdaugaZero(fact, nrZerouriLaFinal);
+            Console.Write($"{x}! = ");
+            return fact;
         }
 
         private static int[] InmultireVectori(int[] v1, int[] v2)
@@ -37,11 +97,29 @@ namespace Operatii_cu_numere_mari
             int[] vSum = InmultireCuScalar(v1, scalar ); 
             for (int i = v2.Length - 2; i >= 0; i--)
             {
-                scalar = v2[i] * (int)Math.Pow(10, j); //AICI TREBUIE MODIFICAT!!
-                vSum = GestionareSuma(vSum , InmultireCuScalar(v1, scalar));
+                scalar = v2[i]; 
+                
+                vSum = GestionareSuma(vSum , AdaugaZero(InmultireCuScalar(v1, scalar) , j));
                 j++;
             }
             return vSum;
+        }
+
+        private static int[] AdaugaZero(int[] v1, int nrZerouri)
+        {
+            int[] vtemp = new int[v1.Length + nrZerouri];
+            for (int i = 0; i < vtemp.Length; i++)
+            {
+                if (i < v1.Length)
+                {
+                    vtemp[i] = v1[i];
+                }
+                else
+                {
+                    vtemp[i] = 0;
+                }
+            }
+            return vtemp;
         }
 
         private static int[] InmultireCuScalar(int[] v1, int scalar)
@@ -120,14 +198,6 @@ namespace Operatii_cu_numere_mari
                 Console.Write($"{v[i]}");
             }
             Console.WriteLine("");
-        }
-
-        private static void in10(int[] v, int n)
-        {
-            for (int i = 0; i < v.Length; i++)
-            {
-
-            }
         }
 
         private static void MakeVector(ref int[] v,int n)
