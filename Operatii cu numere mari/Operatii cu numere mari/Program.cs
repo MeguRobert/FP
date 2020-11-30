@@ -284,14 +284,42 @@ namespace Operatii_cu_numere_mari
 
         private static int[] GestionareDiferenta(int[] v1, int[] v2)
         {
-            if (v1.Length >= v2.Length)
+            if (v1.Length > v2.Length)
             {
                 return Diferenta(v1, v2);
+            }
+            else if (v1.Length == v2.Length)
+            {
+                return NumarulMaiMare(ref v1, ref v2);
             }
             else
             {
                 return Diferenta(v2, v1);
             }
+        }
+
+        private static int[] NumarulMaiMare(ref int[] v1, ref int[] v2)
+        {
+            
+            int i;
+            for (i = 0; i < v1.Length; i++)
+            {
+                if (v1[i]>v2[i])
+                {
+                    return Diferenta(v1, v2);
+                }
+                else if (v1[i]<v2[i])
+                {
+                    int[] aux = v1;
+                    v1 = v2;
+                    v2 = aux;
+                    return Diferenta(v1, v2);
+                }
+            }
+            int[] v = new int[1];
+            v[0] = 0;
+            return v;
+            
         }
 
         private static int[] GestionareSuma(int[] v1, int[] v2)
@@ -311,7 +339,7 @@ namespace Operatii_cu_numere_mari
             max = v1.Length;
             k = v2.Length;    //contorul pentru v2
             int[] v = new int[max];
-            int[] vtemp = new int[max];
+            int[] vtemp; 
 
             for (int i = max - 1; i >= 0; i--)
             {
@@ -329,6 +357,16 @@ namespace Operatii_cu_numere_mari
                 {
                     v[i] = v1[i];
                 }
+            }
+            /******** eliminarea 0-urilor de la inceputul vectorului ********/
+            while (v[0]==0)
+            {
+                vtemp = new int[--max];
+                for (int i = 1; i < v.Length; i++)
+                {
+                    vtemp[i - 1] = v[i];
+                }
+                v = vtemp;
             }
             return v;
         }
