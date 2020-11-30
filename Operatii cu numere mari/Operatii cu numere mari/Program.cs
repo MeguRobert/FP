@@ -18,8 +18,13 @@ namespace Operatii_cu_numere_mari
 
         static void Main(string[] args)
         {
-            Write();
-            Switch(operation);
+            //Write();
+            //Switch(operation);
+
+            Gets();
+            View(GestionareDiferenta(v1,v2));
+           
+            
         }
 
         private static void Switch(char operation)
@@ -75,8 +80,6 @@ namespace Operatii_cu_numere_mari
             View(Putere(v1, v2));
         }
 
-        
-
         private static void Division()
         {
             Console.WriteLine("****** Catul impartiri ******");
@@ -92,8 +95,10 @@ namespace Operatii_cu_numere_mari
         private static void Subtraction()
         {
             Console.WriteLine("****** Diferenta celor doua numere ******");
-            //View(GestionareDiferenta(v1, v2));
+            View(GestionareDiferenta(v1, v2));
         }
+
+       
 
         private static void Addition()
         {
@@ -195,9 +200,36 @@ namespace Operatii_cu_numere_mari
 
         private static int[] Putere(int[] v1, int[] v2)
         {
+            int[] vPutere = PutereScalar(v1, v2[v2.Length-1]);
+            int scalar, j = 1;
+            
+            for (int i = v2.Length - 2; i >= 0; i--)
+            {
+                scalar = v2[i];
+                vPutere = InmultireVectori(vPutere, PutereScalar(v1, scalar * (int)Math.Pow(10,j)));
+                j++;
+            }
+            return vPutere;
+        }
 
-
-            InmultireVectori(v1, v2)
+        private static int[] PutereScalar(int[] v1, int n)
+        {
+            int[] putere;
+            if (n==0)
+            {
+                putere = new int[1];
+                putere[0] = 1;
+            }
+            else
+            {
+                putere = v1;
+            }
+            
+            for (int i = 2; i <= n; i++)
+            {
+                putere = InmultireVectori(putere, v1);
+            }
+            return putere;
         }
 
         private static int[] InmultireVectori(int[] v1, int[] v2)
@@ -250,6 +282,18 @@ namespace Operatii_cu_numere_mari
             return v;
         }
 
+        private static int[] GestionareDiferenta(int[] v1, int[] v2)
+        {
+            if (v1.Length >= v2.Length)
+            {
+                return Diferenta(v1, v2);
+            }
+            else
+            {
+                return Diferenta(v2, v1);
+            }
+        }
+
         private static int[] GestionareSuma(int[] v1, int[] v2)
         {
             if (v1.Length>=v2.Length)
@@ -261,10 +305,36 @@ namespace Operatii_cu_numere_mari
                 return Suma(v2, v1);
             }
         }
+        private static int[] Diferenta(int[] v1, int[] v2)
+        {
+            int max, k;
+            max = v1.Length;
+            k = v2.Length;    //contorul pentru v2
+            int[] v = new int[max];
+            int[] vtemp = new int[max];
 
+            for (int i = max - 1; i >= 0; i--)
+            {
+                k--;               
+                if (k >= 0)
+                {
+                    if (v1[i]<v2[k])
+                    {
+                        v1[i - 1]--;
+                        v1[i] += 10;  
+                    }
+                    v[i] = v1[i] - v2[k];
+                }
+                else
+                {
+                    v[i] = v1[i];
+                }
+            }
+            return v;
+        }
         private static int[] Suma(int[] v1, int[] v2)
         {
-            int max, min, k;
+            int max, k;
             max = v1.Length;
             k = v2.Length;    //contorul pentru v2
             int[] v = new int[max + 1];
