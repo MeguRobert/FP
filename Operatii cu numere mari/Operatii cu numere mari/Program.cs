@@ -21,10 +21,9 @@ namespace Operatii_cu_numere_mari
             //Write();
             //Switch(operation);
 
-            Gets();
-            View(GestionareDiferenta(v1,v2));
-           
-            
+            GetData();
+            MakeVector(ref v1, n);
+            View(ImpartireScalar(v1,0));
         }
 
         private static void Switch(char operation)
@@ -83,7 +82,7 @@ namespace Operatii_cu_numere_mari
         private static void Division()
         {
             Console.WriteLine("****** Catul impartiri ******");
-            //View(InmultireVectori(v1, v2));
+            View(ImpartireScalar(v1, 8));
         }
 
         private static void Multiplication()
@@ -98,7 +97,7 @@ namespace Operatii_cu_numere_mari
             View(GestionareDiferenta(v1, v2));
         }
 
-       
+        
 
         private static void Addition()
         {
@@ -127,6 +126,7 @@ namespace Operatii_cu_numere_mari
             Console.WriteLine("f   factorial");
 
             operation = Console.ReadKey().KeyChar;
+            Console.WriteLine();
         }
 
         private static void Fact()
@@ -261,6 +261,60 @@ namespace Operatii_cu_numere_mari
                 }
             }
             return vtemp;
+        }
+
+        private static int[] ImpartireScalar(int[] v1, int n)
+        {
+            int lenght=v1.Length;
+            int[] v;
+            int[] vtemp;
+            if (n != 0)
+            {
+                v = new int[lenght];
+                int s = 0;
+                int r = 0;
+                int j = 0;
+                
+                for (int i = 0; i < v1.Length; i++)
+                {
+                    s = 0;
+                    r += v1[i];
+                    if (r >= n)
+                    {
+                        while (r>=n)
+                        {
+                            r -= n; s++;
+                        }
+                        v[j] = s;  j++;
+                    }
+                    else if (r==0)
+                    {
+                        v[j] = 0;  j++;
+                    }
+                    else
+                    {
+                        if (i+1!=v1.Length)
+                        {
+                            vtemp = new int[--lenght];
+                            for (int idx = 0; idx < vtemp.Length; idx++)
+                            {
+                                vtemp[idx] = v[idx];
+                            }
+                            v = vtemp;
+                        }
+                        
+                    }
+                    r *= 10;
+                }
+            }
+            else
+            {
+                v = null;
+                Console.WriteLine("Nu putem divide cu zero");
+            }
+
+            return v;
+            
         }
 
         private static int[] InmultireCuScalar(int[] v1, int scalar)
