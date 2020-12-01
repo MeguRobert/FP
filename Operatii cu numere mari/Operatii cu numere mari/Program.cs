@@ -10,20 +10,17 @@ namespace Operatii_cu_numere_mari
 {
     class Program
     {
-        static int[] v1,v2;
+        static int[] v1,v2,v;
         static char operation;
-        static int n,x;
+        static int n,x,rest,nrZecimale;
         static string line;
         static Stopwatch sw = new Stopwatch();
 
         static void Main(string[] args)
         {
-            //Write();
-            //Switch(operation);
-
-            GetData();
-            MakeVector(ref v1, n);
-            View(ImpartireScalar(v1,0));
+            Write();
+            Switch(operation);
+            Console.WriteLine();
         }
 
         private static void Switch(char operation)
@@ -81,10 +78,75 @@ namespace Operatii_cu_numere_mari
 
         private static void Division()
         {
+            Console.WriteLine("Cu ce aproximare sa fie calculata impartirea?");
+            Console.Write("Numarul maxim a zecimalelor:");
+            nrZecimale = int.Parse(Console.ReadLine());
             Console.WriteLine("****** Catul impartiri ******");
-            View(ImpartireScalar(v1, 8));
+            int x = 3;
+            v = ImpartireScalar(v1, x);
+            View(v);
+            if (rest!=0 && nrZecimale!=0)
+            {
+                Console.Write(".");
+                v=Decimal(MakeVectorFrom(rest),x);
+                View(v);
+            }
         }
 
+        private static int[] Decimal(int[] v1, int n)
+        {
+            int lenght = v1.Length;
+            int[] v = new int[nrZecimale];
+            int[] vtemp = new int[nrZecimale];
+            int s;
+            int r = 0;
+            int j = 0;
+
+            int i = 0;
+            while (i < nrZecimale + lenght)
+            {
+                s = 0;
+                if (i<v1.Length)
+                {
+                    r += v1[i];
+                }
+                if (r >= n)
+                {
+                    while (r >= n)
+                    {
+                        r -= n; s++;
+                    }
+                    v[j] = s; j++;
+                }
+                else if (r == 0)
+                {
+                    while (vtemp[nrZecimale - 1]==0)
+                    {
+                        vtemp = new int[--nrZecimale];
+                        for (int idx = 0; idx < vtemp.Length; idx++)
+                        {
+                            vtemp[idx] = v[idx];
+                        }
+                        v = vtemp;
+                    }
+
+                    break;
+                }
+                r *= 10;
+                i++;
+            }
+
+            return v;
+        }
+        /* if (i + 1 != v1.Length)
+                {
+                    vtemp = new int[--lenght];
+                    for (int idx = 0; idx < vtemp.Length; idx++)
+                    {
+                        vtemp[idx] = v[idx];
+                    }
+                    v = vtemp;
+                }*/
         private static void Multiplication()
         {
             Console.WriteLine("****** Produsul celor doua numere ******");
@@ -96,8 +158,6 @@ namespace Operatii_cu_numere_mari
             Console.WriteLine("****** Diferenta celor doua numere ******");
             View(GestionareDiferenta(v1, v2));
         }
-
-        
 
         private static void Addition()
         {
@@ -169,7 +229,7 @@ namespace Operatii_cu_numere_mari
                         } 
                     }
                 }
-                vidx = MakeVectorFromIndex(index);
+                vidx = MakeVectorFrom(index);
                 fact = InmultireVectori(fact, vidx);
 
             }
@@ -178,10 +238,10 @@ namespace Operatii_cu_numere_mari
             return fact;
         }
 
-        private static int[] MakeVectorFromIndex(int index)
+        private static int[] MakeVectorFrom(int num)
         {
             int lenght = 0;
-            int aux = index;
+            int aux = num;
             int[] vtemp;
             while (aux != 0)
             {
@@ -189,10 +249,10 @@ namespace Operatii_cu_numere_mari
                 aux /= 10;
             }
             vtemp = new int[lenght];
-            while (index != 0)
+            while (num != 0)
             {
-                vtemp[--lenght] = index % 10;
-                index /= 10;
+                vtemp[--lenght] = num % 10;
+                num /= 10;
             }
             
             return vtemp;
@@ -306,6 +366,7 @@ namespace Operatii_cu_numere_mari
                     }
                     r *= 10;
                 }
+                rest = r/10; 
             }
             else
             {
@@ -474,7 +535,6 @@ namespace Operatii_cu_numere_mari
             {
                 Console.Write($"{v[i]}");
             }
-            Console.WriteLine("");
         }
 
         private static void MakeVector(ref int[] v,int n)
