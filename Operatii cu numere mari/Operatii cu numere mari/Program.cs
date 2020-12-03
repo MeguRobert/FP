@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 
 namespace Operatii_cu_numere_mari
 {
@@ -13,7 +13,7 @@ namespace Operatii_cu_numere_mari
         static int[] v1,v2,v;
         static char operation;
         static int n,x,rest,nrZecimale;
-        static string line;
+        static string bigNumber;
         static Stopwatch sw = new Stopwatch();
         private static bool rIsgreater;
         private static int[] vrest;
@@ -21,6 +21,11 @@ namespace Operatii_cu_numere_mari
         static void Main(string[] args)
         {
             Write();
+            Console.Write("Primul numar: ");
+            bigNumber = ValidInput();
+            v1 = MakeVectorFrom(bigNumber);
+            Console.Write("Operatia care doresti sa fie executat: ");
+            operation = char.Parse(Console.ReadLine());
             Switch(operation);
             Console.WriteLine();
         }
@@ -37,7 +42,9 @@ namespace Operatii_cu_numere_mari
             }
             else
             {
-                Gets();
+                Console.Write("Al doilea numar: ");
+                bigNumber = ValidInput();
+                v2 = MakeVectorFrom(bigNumber);
                 switch (operation)
                 {
                     case '+':
@@ -65,11 +72,8 @@ namespace Operatii_cu_numere_mari
 
         private static void SquareRoot()
         {
-            GetData();
-            MakeVector(ref v1, n);
-
             Console.WriteLine("****** Radacina patrata al numarului ******");
-            //View(InmultireVectori(v1, v2));
+            
         }
 
         private static void Power()
@@ -84,7 +88,7 @@ namespace Operatii_cu_numere_mari
             Console.Write("Numarul maxim a zecimalelor:");
             nrZecimale = int.Parse(Console.ReadLine());
             Console.WriteLine("****** Catul impartiri ******");
-            int x = 3;
+            
             v = Impartire(v1, v2);
             View(v);
             if (rest!=0 && nrZecimale!=0)
@@ -101,7 +105,7 @@ namespace Operatii_cu_numere_mari
             int len2 = v2.Length;
             int[] v;
             int[] vtemp;
-            if (/*len1 >= 1 &&*/ v1[0]!= 0)
+            if ( v1[0]!= 0)
             {
                 v = new int[len1];
                 int s;
@@ -223,18 +227,10 @@ namespace Operatii_cu_numere_mari
             View(GestionareSuma(v1, v2));
         }
 
-        private static void Gets()
-        {
-            GetData();
-            MakeVector(ref v1, n);
-            GetData();
-            MakeVector(ref v2, n);
-        }
-
         private static void Write()
         {
-            Console.WriteLine("Acesta este un program care poate efectua operatii cu numere mari");
-            Console.WriteLine("Care operatie doresti sa fie executat?");
+            Console.WriteLine("Acesta este un program care poate efectua operatii cu numere mari.");
+            Console.WriteLine("Operatiile valide sunt:");
             Console.WriteLine("+   adaugare");
             Console.WriteLine("-   scadere                (Almost works)");
             Console.WriteLine("*   inmultire ");
@@ -242,23 +238,31 @@ namespace Operatii_cu_numere_mari
             Console.WriteLine("p   ridicare la putere");
             Console.WriteLine("r   radacina patrata       (Coming soon) ");
             Console.WriteLine("f   factorial");
+        }
 
-            //operation = Console.ReadKey().KeyChar;
-            //Console.WriteLine();
-            operation = char.Parse(Console.ReadLine());
+        private static string ValidInput()
+        {
+            string onlyNumbers = @"^\d+$";
+            string line;
+            Match result;
+            do
+            {
+                line = Console.ReadLine();
+                result = Regex.Match(line, onlyNumbers);
+            } while (!result.Success);
+            return result.Value;
         }
 
         private static void Fact()
         {
-            Console.WriteLine("FACTORIAL");
-            Console.WriteLine("Calculam factorialul numarului x.");
-            Console.Write("x=");
-            x = int.Parse(Console.ReadLine());
+            Console.WriteLine("\n FACTORIAL");
+            x = int.Parse(bigNumber);
             sw.Start();
             View(Factorial(x));
             sw.Stop();
             TimeSpan ts = sw.Elapsed;
             string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}", ts.Hours, ts.Minutes, ts.Seconds, ts.Milliseconds / 10);
+            Console.WriteLine();
             Console.WriteLine($"Runtime " + elapsedTime);
             Console.WriteLine();
         }
@@ -511,7 +515,7 @@ namespace Operatii_cu_numere_mari
         {
             int max,min;
             max = v1.Length;
-            min = v2.Length;    //contorul pentru v2
+            min = v2.Length;    
             int k;    //contorul pentru v2
             int[] v = new int[max];
             int[] vtemp;
@@ -526,7 +530,7 @@ namespace Operatii_cu_numere_mari
                     {
                         if (v1[i] < v2[k])
                         {
-                            v1[i - 1]--;
+                            v1[i - 1]--;  //imprumut
                             v1[i] += 10;
                         }
                         v[i] = v1[i] - v2[k];
@@ -542,23 +546,19 @@ namespace Operatii_cu_numere_mari
                 k = 0;
                 for (int i = 0; i < min+k; i++)
                 {
-                    
-                    
-                        if (v1[i] < v2[i])
-                        {
-                            v1[i - 1]--;
-                            v1[i] += 10;
-                        }
-                        if (v1[i] - v2[i]>0)
-                        {
-                            v[i] = v1[i] - v2[i];
-                        }
-                        else
-                        {
-                            k++;
-                        }
-                        
-                    
+                    if (v1[i] < v2[i])
+                    {
+                        v1[i - 1]--;  
+                        v1[i] += 10;
+                    }
+                    if (v1[i] - v2[i]>0)
+                    {
+                        v[i] = v1[i] - v2[i];
+                    }
+                    else
+                    {
+                        k++;
+                    } 
                 }
             }
            
@@ -612,12 +612,6 @@ namespace Operatii_cu_numere_mari
             return v;
         }
 
-        private static void GetData()
-        {
-            line = Console.ReadLine();
-            n = line.Length;
-        }
-
         private static void View(int[] v)
         {
             for (int i = 0; i < v.Length; i++)
@@ -626,13 +620,14 @@ namespace Operatii_cu_numere_mari
             }
         }
 
-        private static void MakeVector(ref int[] v,int n)
+        private static int[] MakeVectorFrom(string bigNumber)
         {
-            v = new int[n];
+            v = new int[bigNumber.Length];
             for (int i = 0; i < v.Length; i++)
             {
-                v[i] = Convert.ToInt32(line[i]-'0');
+                v[i] = Convert.ToInt32(bigNumber[i]-'0');
             }
+            return v;
         }
     }
 }
