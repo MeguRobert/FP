@@ -128,29 +128,7 @@ namespace Operatii_cu_numere_mari
                         v = GestionareSuma(AdaugaZero(v, 1), MakeVectorFrom(s));
                     }
                     
-                    j++;//ITT FOLYTADIK
-                    //hogy adom hozzá a vektorhoz azz, hogy hányszor van meg benne?
-                    
-
-                    /*
-                    if (r[0] == 0)
-                    {
-                        v[j] = 0; j++;
-                    }
-                    else
-                    {
-                        if (i + 1 != v1.Length)
-                        {
-                            vtemp = new int[--len1];
-                            for (int idx = 0; idx < vtemp.Length; idx++)
-                            {
-                                vtemp[idx] = v[idx];
-                            }
-                            v = vtemp;
-                        }
-
-                    }
-                    */
+                    j++;
 
                     if (i==v1.Length-1)
                     {
@@ -258,11 +236,11 @@ namespace Operatii_cu_numere_mari
             Console.WriteLine("Acesta este un program care poate efectua operatii cu numere mari");
             Console.WriteLine("Care operatie doresti sa fie executat?");
             Console.WriteLine("+   adaugare");
-            Console.WriteLine("-   scadere  ");
+            Console.WriteLine("-   scadere                (Almost works)");
             Console.WriteLine("*   inmultire ");
-            Console.WriteLine("/   impartie ");
-            Console.WriteLine("p   ridicare la putere r ");
-            Console.WriteLine("r   radacina patrata");
+            Console.WriteLine("/   impartie               (Coming soon)");
+            Console.WriteLine("p   ridicare la putere");
+            Console.WriteLine("r   radacina patrata       (Coming soon) ");
             Console.WriteLine("f   factorial");
 
             //operation = Console.ReadKey().KeyChar;
@@ -531,10 +509,10 @@ namespace Operatii_cu_numere_mari
         }
         private static int[] Diferenta(int[] v1, int[] v2)
         {
-            int max,min, k;
+            int max,min;
             max = v1.Length;
             min = v2.Length;    //contorul pentru v2
-            k;    //contorul pentru v2
+            int k;    //contorul pentru v2
             int[] v = new int[max];
             int[] vtemp;
 
