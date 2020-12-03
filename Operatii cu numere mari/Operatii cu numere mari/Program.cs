@@ -15,6 +15,8 @@ namespace Operatii_cu_numere_mari
         static int n,x,rest,nrZecimale;
         static string line;
         static Stopwatch sw = new Stopwatch();
+        private static bool rIsgreater;
+        private static int[] vrest;
 
         static void Main(string[] args)
         {
@@ -83,7 +85,7 @@ namespace Operatii_cu_numere_mari
             nrZecimale = int.Parse(Console.ReadLine());
             Console.WriteLine("****** Catul impartiri ******");
             int x = 3;
-            v = ImpartireScalar(v1, x);
+            v = Impartire(v1, v2);
             View(v);
             if (rest!=0 && nrZecimale!=0)
             {
@@ -91,6 +93,92 @@ namespace Operatii_cu_numere_mari
                 v=Decimal(MakeVectorFrom(rest),x);
                 View(v);
             }
+        }
+
+        private static int[] Impartire(int[] v1, int[] v2)
+        {
+            int len1 = v1.Length;
+            int len2 = v2.Length;
+            int[] v;
+            int[] vtemp;
+            if (/*len1 >= 1 &&*/ v1[0]!= 0)
+            {
+                v = new int[len1];
+                int s;
+                int[] r = new int[len1];
+
+                int j = 0;
+
+                for (int i = 0; i < v1.Length; i++)
+                {
+                    s = 0;
+                    r = GestionareSuma(r, v1);
+
+                    while (Isgreater(r,v2))
+                    {
+                        r = Diferenta(r,v2);
+                        s++;
+                    }
+                    if (v[0]==0)
+                    {
+                        v = GestionareSuma(v, MakeVectorFrom(s));
+                    }
+                    else
+                    {
+                        v = GestionareSuma(AdaugaZero(v, 1), MakeVectorFrom(s));
+                    }
+                    
+                    j++;//ITT FOLYTADIK
+                    //hogy adom hozzá a vektorhoz azz, hogy hányszor van meg benne?
+                    
+
+                    /*
+                    if (r[0] == 0)
+                    {
+                        v[j] = 0; j++;
+                    }
+                    else
+                    {
+                        if (i + 1 != v1.Length)
+                        {
+                            vtemp = new int[--len1];
+                            for (int idx = 0; idx < vtemp.Length; idx++)
+                            {
+                                vtemp[idx] = v[idx];
+                            }
+                            v = vtemp;
+                        }
+
+                    }
+                    */
+
+                    if (i==v1.Length-1)
+                    {
+                        vrest = r;
+                    }
+                    r = AdaugaZero(r,1);
+                }
+                
+            }
+            else
+            {
+                v = null;
+                Console.WriteLine("Nu putem divide cu zero");
+            }
+
+            return v;
+        }
+
+        private static bool Isgreater(int[] v1, int[] v2)
+        {
+            for (int i = 0; i < v2.Length; i++)
+            {
+                if (v1[i] >= v2[i])
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         private static int[] Decimal(int[] v1, int n)
@@ -138,15 +226,7 @@ namespace Operatii_cu_numere_mari
 
             return v;
         }
-        /* if (i + 1 != v1.Length)
-                {
-                    vtemp = new int[--lenght];
-                    for (int idx = 0; idx < vtemp.Length; idx++)
-                    {
-                        vtemp[idx] = v[idx];
-                    }
-                    v = vtemp;
-                }*/
+       
         private static void Multiplication()
         {
             Console.WriteLine("****** Produsul celor doua numere ******");
@@ -185,8 +265,9 @@ namespace Operatii_cu_numere_mari
             Console.WriteLine("r   radacina patrata");
             Console.WriteLine("f   factorial");
 
-            operation = Console.ReadKey().KeyChar;
-            Console.WriteLine();
+            //operation = Console.ReadKey().KeyChar;
+            //Console.WriteLine();
+            operation = char.Parse(Console.ReadLine());
         }
 
         private static void Fact()
@@ -450,31 +531,61 @@ namespace Operatii_cu_numere_mari
         }
         private static int[] Diferenta(int[] v1, int[] v2)
         {
-            int max, k;
+            int max,min, k;
             max = v1.Length;
-            k = v2.Length;    //contorul pentru v2
+            min = v2.Length;    //contorul pentru v2
+            k;    //contorul pentru v2
             int[] v = new int[max];
-            int[] vtemp; 
+            int[] vtemp;
 
-            for (int i = max - 1; i >= 0; i--)
+            if (operation=='-')
             {
-                k--;               
-                if (k >= 0)
+                k = min;
+                for (int i = max - 1; i >= 0; i--)
                 {
-                    if (v1[i]<v2[k])
+                    k--;
+                    if (k >= 0)
                     {
-                        v1[i - 1]--;
-                        v1[i] += 10;  
+                        if (v1[i] < v2[k])
+                        {
+                            v1[i - 1]--;
+                            v1[i] += 10;
+                        }
+                        v[i] = v1[i] - v2[k];
                     }
-                    v[i] = v1[i] - v2[k];
-                }
-                else
-                {
-                    v[i] = v1[i];
+                    else
+                    {
+                        v[i] = v1[i];
+                    }
                 }
             }
+            else
+            {
+                k = 0;
+                for (int i = 0; i < min+k; i++)
+                {
+                    
+                    
+                        if (v1[i] < v2[i])
+                        {
+                            v1[i - 1]--;
+                            v1[i] += 10;
+                        }
+                        if (v1[i] - v2[i]>0)
+                        {
+                            v[i] = v1[i] - v2[i];
+                        }
+                        else
+                        {
+                            k++;
+                        }
+                        
+                    
+                }
+            }
+           
             /******** eliminarea 0-urilor de la inceputul vectorului ********/
-            while (v[0]==0)
+            while (v.Length>1 && v[0]==0)
             {
                 vtemp = new int[--max];
                 for (int i = 1; i < v.Length; i++)
