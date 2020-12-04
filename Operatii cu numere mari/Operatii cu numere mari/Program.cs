@@ -15,9 +15,8 @@ namespace Operatii_cu_numere_mari
         static int n,x,rest,nrZecimale;
         static string bigNumber;
         static Stopwatch sw = new Stopwatch();
-        private static bool rIsgreater;
         private static int[] vrest;
-
+       
         static void Main(string[] args)
         {
             Write();
@@ -26,11 +25,11 @@ namespace Operatii_cu_numere_mari
             v1 = MakeVectorFrom(bigNumber);
             Console.Write("Operatia care doresti sa fie executat: ");
             operation = char.Parse(Console.ReadLine());
-            Switch(operation);
+            Switch_And_Do(operation);
             Console.WriteLine();
         }
 
-        private static void Switch(char operation)
+        private static void Switch_And_Do(char operation)
         {
             if (operation == 'f')
             {
@@ -116,20 +115,20 @@ namespace Operatii_cu_numere_mari
                 for (int i = 0; i < v1.Length; i++)
                 {
                     s = 0;
-                    r = GestionareSuma(r, v1);
+                    r = Suma(r, v1);
 
-                    while (Isgreater(r,v2))
+                    while (PrimulEsteMaiMare(r,v2))
                     {
                         r = Diferenta(r,v2);
                         s++;
                     }
                     if (v[0]==0)
                     {
-                        v = GestionareSuma(v, MakeVectorFrom(s));
+                        v = Suma(v, MakeVectorFrom(s));
                     }
                     else
                     {
-                        v = GestionareSuma(AdaugaZero(v, 1), MakeVectorFrom(s));
+                        v = Suma(AdaugaZero(v, 1), MakeVectorFrom(s));
                     }
                     
                     j++;
@@ -149,18 +148,6 @@ namespace Operatii_cu_numere_mari
             }
 
             return v;
-        }
-
-        private static bool Isgreater(int[] v1, int[] v2)
-        {
-            for (int i = 0; i < v2.Length; i++)
-            {
-                if (v1[i] >= v2[i])
-                {
-                    return true;
-                }
-            }
-            return false;
         }
 
         private static int[] Decimal(int[] v1, int n)
@@ -218,13 +205,13 @@ namespace Operatii_cu_numere_mari
         private static void Subtraction()
         {
             Console.WriteLine("****** Diferenta celor doua numere ******");
-            View(GestionareDiferenta(v1, v2));
+            View(Diferenta(v1, v2));
         }
 
         private static void Addition()
         {
             Console.WriteLine("****** suma celor doua numere ******");
-            View(GestionareSuma(v1, v2));
+            View(Suma(v1, v2));
         }
 
         private static void Write()
@@ -247,6 +234,7 @@ namespace Operatii_cu_numere_mari
             Match result;
             do
             {
+                Console.Write("Ati tastat gresit! Incercati din nou:");
                 line = Console.ReadLine();
                 result = Regex.Match(line, onlyNumbers);
             } while (!result.Success);
@@ -362,8 +350,7 @@ namespace Operatii_cu_numere_mari
             for (int i = v2.Length - 2; i >= 0; i--)
             {
                 scalar = v2[i]; 
-                
-                vSum = GestionareSuma(vSum , AdaugaZero(InmultireCuScalar(v1, scalar) , j));
+                vSum = Suma(vSum , AdaugaZero(InmultireCuScalar(v1, scalar) , j));
                 j++;
             }
             return vSum;
@@ -460,59 +447,31 @@ namespace Operatii_cu_numere_mari
             return v;
         }
 
-        private static int[] GestionareDiferenta(int[] v1, int[] v2)
+        private static bool PrimulEsteMaiMare( int[] v1, int[] v2)
         {
-            if (v1.Length > v2.Length)
+            for (int i = 0; i < v2.Length; i++)
             {
-                return Diferenta(v1, v2);
+                if (v1[i]>=v2[i])
+                {
+                    return true;
+                }
             }
-            else if (v1.Length == v2.Length)
-            {
-                return NumarulMaiMare(ref v1, ref v2);
-            }
-            else
+            return false;
+        }
+
+        private static int[] Diferenta(int[] v1, int[] v2)
+        {
+            if (v1.Length < v2.Length)
             {
                 return Diferenta(v2, v1);
             }
-        }
-
-        private static int[] NumarulMaiMare(ref int[] v1, ref int[] v2)
-        {
-            
-            int i;
-            for (i = 0; i < v1.Length; i++)
+            if (v1.Length == v2.Length)
             {
-                if (v1[i]>v2[i])
+                if (!PrimulEsteMaiMare(v1, v2))
                 {
-                    return Diferenta(v1, v2);
-                }
-                else if (v1[i]<v2[i])
-                {
-                    int[] aux = v1;
-                    v1 = v2;
-                    v2 = aux;
-                    return Diferenta(v1, v2);
+                    return Diferenta(v2, v1);
                 }
             }
-            int[] v = new int[1];
-            v[0] = 0;
-            return v;
-            
-        }
-
-        private static int[] GestionareSuma(int[] v1, int[] v2)
-        {
-            if (v1.Length>=v2.Length)
-            {
-                return Suma(v1, v2);
-            }
-            else
-            {
-                return Suma(v2, v1);
-            }
-        }
-        private static int[] Diferenta(int[] v1, int[] v2)
-        {
             int max,min;
             max = v1.Length;
             min = v2.Length;    
@@ -520,48 +479,25 @@ namespace Operatii_cu_numere_mari
             int[] v = new int[max];
             int[] vtemp;
 
-            if (operation=='-')
+            k = min;
+            for (int i = max - 1; i >= 0; i--)
             {
-                k = min;
-                for (int i = max - 1; i >= 0; i--)
+                k--;
+                if (k >= 0)
                 {
-                    k--;
-                    if (k >= 0)
+                    if (v1[i] < v2[k])
                     {
-                        if (v1[i] < v2[k])
-                        {
-                            v1[i - 1]--;  //imprumut
-                            v1[i] += 10;
-                        }
-                        v[i] = v1[i] - v2[k];
-                    }
-                    else
-                    {
-                        v[i] = v1[i];
-                    }
-                }
-            }
-            else
-            {
-                k = 0;
-                for (int i = 0; i < min+k; i++)
-                {
-                    if (v1[i] < v2[i])
-                    {
-                        v1[i - 1]--;  
+                        v1[i - 1]--;  //imprumut
                         v1[i] += 10;
                     }
-                    if (v1[i] - v2[i]>0)
-                    {
-                        v[i] = v1[i] - v2[i];
-                    }
-                    else
-                    {
-                        k++;
-                    } 
+                    v[i] = v1[i] - v2[k];
+                }
+                else
+                {
+                    v[i] = v1[i];
                 }
             }
-           
+        
             /******** eliminarea 0-urilor de la inceputul vectorului ********/
             while (v.Length>1 && v[0]==0)
             {
@@ -576,6 +512,10 @@ namespace Operatii_cu_numere_mari
         }
         private static int[] Suma(int[] v1, int[] v2)
         {
+            if (v1.Length < v2.Length)
+            {
+                return Suma(v2, v1);
+            }
             int max, k;
             max = v1.Length;
             k = v2.Length;    //contorul pentru v2
@@ -585,15 +525,14 @@ namespace Operatii_cu_numere_mari
             for (int i = max - 1; i >= 0; i--)
             {
                 k--;
-                v[i + 1] = trans+v1[i];           //adaugam transportul acumulat din pozitia anterioara 
-                                            // si elementele vectorului 2
+                v[i + 1] = trans+v1[i];     //adaugam transportul acumulat din pozitia anterioara 
+                                            // si elementele vectorului 1
                 if (k >= 0)
                     v[i + 1] += v2[k];      //adaugam elementele vectorului 2 pana cand avem ce adauga :) (Exclude overflow)     
                                        
                 trans = v[i + 1] / 10; //transportul va fi intotdeauna egal cu cifra zecilor
                 v[i + 1] %= 10;        //eliminam valoarea transportului din pozitia curenta a vetorului
-            }
-                          
+            } 
             if (trans==0)
             {
                 for (int i = 1; i < v.Length; i++)
@@ -603,7 +542,6 @@ namespace Operatii_cu_numere_mari
                 v = vtemp;
                 //daca transportul final este 0 trebuie eliminat 0-ul de la inceputul vectorului
                 //si lungimea vectorului devine mai mic cu 1 
-
             }
             else
             {
