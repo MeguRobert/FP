@@ -12,11 +12,13 @@ namespace Operatii_cu_numere_mari
     {
         static int[] v1,v2,v;
         static char operation;
-        static int n,x,rest,nrZecimale;
+        static int x,rest,nrZecimale;
         static string bigNumber;
         static Stopwatch sw = new Stopwatch();
         private static int[] vrest;
-       
+        private static bool isNegative = false;
+        private static bool esteMaiMare = false;
+
         static void Main(string[] args)
         {
             Write();
@@ -83,71 +85,64 @@ namespace Operatii_cu_numere_mari
 
         private static void Division()
         {
-            Console.WriteLine("Cu ce aproximare sa fie calculata impartirea?");
+            /*Console.WriteLine("Cu ce aproximare sa fie calculata impartirea?");
             Console.Write("Numarul maxim a zecimalelor:");
-            nrZecimale = int.Parse(Console.ReadLine());
+            nrZecimale = int.Parse(Console.ReadLine());*/
             Console.WriteLine("****** Catul impartiri ******");
             
             v = Impartire(v1, v2);
-            View(v);
+            if (v!=null)
+            {
+                View(v);
+            }
+            /*
             if (rest!=0 && nrZecimale!=0)
             {
                 Console.Write(".");
                 v=Decimal(MakeVectorFrom(rest),x);
                 View(v);
-            }
+            }*/
         }
 
-        private static int[] Impartire(int[] v1, int[] v2)
+        private static int[] Impartire(int[] deimpartit, int[] divizor)
         {
-            int len1 = v1.Length;
-            int len2 = v2.Length;
-            int[] v;
-            int[] vtemp;
-            if ( v1[0]!= 0)
+            int[] v = null;
+
+            if (divizor.Length == 1 && divizor[0] == 0) return null;
+            else if (divizor.Length == 1 && divizor[0] == 1) return deimpartit;
+            else if (deimpartit.Length == 1 && deimpartit[0] == 0) return deimpartit;
+            else
             {
-                v = new int[len1];
-                int s;
-                int[] r = new int[len1];
-
-                int j = 0;
-
-                for (int i = 0; i < v1.Length; i++)
+                int[] r = null;
+                int i = 0;
+                bool ok = false;
+                do
                 {
-                    s = 0;
-                    r = Suma(r, v1);
-
-                    while (PrimulEsteMaiMare(r,v2))
+                    
+                    if (r == null)r = MakeVectorFrom(deimpartit[i]);
+                    else r = AdaugaNumar(r, deimpartit[i], 1);
+                    ok = PrimulEsteMaiMare(r, v2);
+                    if (ok)
                     {
-                        r = Diferenta(r,v2);
-                        s++;
-                    }
-                    if (v[0]==0)
-                    {
-                        v = Suma(v, MakeVectorFrom(s));
+                        int s = 0;
+                        while (PrimulEsteMaiMare(r, v2))
+                        {
+                            r = Diferenta(r, divizor);
+                            s++;
+                        }
+                        if (v == null) v = MakeVectorFrom(s);
+                        else v = AdaugaNumar(v, s, 1);
+                        if (r.Length == 1 && r[0] == 0) r = null;
                     }
                     else
                     {
-                        v = Suma(AdaugaZero(v, 1), MakeVectorFrom(s));
+                        if (deimpartit[i] == 0) v = AdaugaNumar(v, 0, 1);
                     }
-                    
-                    j++;
-
-                    if (i==v1.Length-1)
-                    {
-                        vrest = r;
-                    }
-                    r = AdaugaZero(r,1);
-                }
-                
+                        
+                    i++;
+                } while (i < deimpartit.Length);
+                return v;
             }
-            else
-            {
-                v = null;
-                Console.WriteLine("Nu putem divide cu zero");
-            }
-
-            return v;
         }
 
         private static int[] Decimal(int[] v1, int n)
@@ -205,7 +200,12 @@ namespace Operatii_cu_numere_mari
         private static void Subtraction()
         {
             Console.WriteLine("****** Diferenta celor doua numere ******");
-            View(Diferenta(v1, v2));
+            int[] dif = Diferenta(v1, v2);
+            if (isNegative)
+            {
+                Console.Write("-");
+            }
+            View(dif);
         }
 
         private static void Addition()
@@ -234,7 +234,6 @@ namespace Operatii_cu_numere_mari
             Match result;
             do
             {
-                Console.Write("Ati tastat gresit! Incercati din nou:");
                 line = Console.ReadLine();
                 result = Regex.Match(line, onlyNumbers);
             } while (!result.Success);
@@ -284,7 +283,7 @@ namespace Operatii_cu_numere_mari
                 fact = InmultireVectori(fact, vidx);
 
             }
-            fact = AdaugaZero(fact, nrZerouriLaFinal);
+            fact = AdaugaNumar(fact,0,nrZerouriLaFinal);
             Console.Write($"{x}! = ");
             return fact;
         }
@@ -350,15 +349,15 @@ namespace Operatii_cu_numere_mari
             for (int i = v2.Length - 2; i >= 0; i--)
             {
                 scalar = v2[i]; 
-                vSum = Suma(vSum , AdaugaZero(InmultireCuScalar(v1, scalar) , j));
+                vSum = Suma(vSum , AdaugaNumar(InmultireCuScalar(v1, scalar),0 , j));
                 j++;
             }
             return vSum;
         }
 
-        private static int[] AdaugaZero(int[] v1, int nrZerouri)
+        private static int[] AdaugaNumar(int[] v1, int numar, int decateori)
         {
-            int[] vtemp = new int[v1.Length + nrZerouri];
+            int[] vtemp = new int[v1.Length + decateori];
             for (int i = 0; i < vtemp.Length; i++)
             {
                 if (i < v1.Length)
@@ -367,7 +366,7 @@ namespace Operatii_cu_numere_mari
                 }
                 else
                 {
-                    vtemp[i] = 0;
+                    vtemp[i] = numar;
                 }
             }
             return vtemp;
@@ -449,52 +448,50 @@ namespace Operatii_cu_numere_mari
 
         private static bool PrimulEsteMaiMare( int[] v1, int[] v2)
         {
-            for (int i = 0; i < v2.Length; i++)
+            if (v1.Length < v2.Length) return false;
+            else if (v1.Length == v2.Length)
             {
-                if (v1[i]>=v2[i])
+                for (int i = 0; i < v2.Length; i++)
                 {
-                    return true;
+                    if (v1[i] < v2[i])
+                    {
+                        return false;
+                    }
                 }
             }
-            return false;
+            return true;
         }
 
         private static int[] Diferenta(int[] v1, int[] v2)
         {
-            if (v1.Length < v2.Length)
+          
+            if (!PrimulEsteMaiMare(v1, v2))
             {
+                isNegative = true;
                 return Diferenta(v2, v1);
             }
-            if (v1.Length == v2.Length)
-            {
-                if (!PrimulEsteMaiMare(v1, v2))
-                {
-                    return Diferenta(v2, v1);
-                }
-            }
+            
             int max,min;
             max = v1.Length;
             min = v2.Length;    
-            int k;    //contorul pentru v2
+            int k = min;    //contorul pentru v2
             int[] v = new int[max];
             int[] vtemp;
-
-            k = min;
             for (int i = max - 1; i >= 0; i--)
             {
                 k--;
                 if (k >= 0)
                 {
-                    if (v1[i] < v2[k])
-                    {
-                        v1[i - 1]--;  //imprumut
-                        v1[i] += 10;
-                    }
                     v[i] = v1[i] - v2[k];
                 }
                 else
                 {
                     v[i] = v1[i];
+                }
+                if (v[i] < 0)
+                {
+                    v1[i - 1]--;  //imprumut
+                    v[i] += 10;
                 }
             }
         
