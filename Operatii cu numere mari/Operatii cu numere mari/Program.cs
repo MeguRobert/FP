@@ -95,6 +95,13 @@ namespace Operatii_cu_numere_mari
             {
                 View(v);
             }
+            else
+            {
+                Console.WriteLine("Nu putem divide cu 0!");
+                Console.WriteLine("Incearca cu un alt divizor");
+                Console.WriteLine();
+                Switch_And_Do(operation);
+            }
             /*
             if (rest!=0 && nrZecimale!=0)
             {
@@ -118,7 +125,6 @@ namespace Operatii_cu_numere_mari
                 bool ok = false;
                 do
                 {
-                    
                     if (r == null)r = MakeVectorFrom(deimpartit[i]);
                     else r = AdaugaNumar(r, deimpartit[i], 1);
                     ok = PrimulEsteMaiMare(r, v2);
@@ -136,9 +142,8 @@ namespace Operatii_cu_numere_mari
                     }
                     else
                     {
-                        if (deimpartit[i] == 0) v = AdaugaNumar(v, 0, 1);
+                        if (v!= null) v = AdaugaNumar(v, 0, 1);
                     }
-                        
                     i++;
                 } while (i < deimpartit.Length);
                 return v;
@@ -456,6 +461,10 @@ namespace Operatii_cu_numere_mari
                     if (v1[i] < v2[i])
                     {
                         return false;
+                    }
+                    else if (v1[i] > v2[i])
+                    {
+                        return true;
                     }
                 }
             }
