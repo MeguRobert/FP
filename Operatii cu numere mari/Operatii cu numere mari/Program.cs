@@ -10,22 +10,20 @@ namespace Operatii_cu_numere_mari
 {
     class Program
     {
-        static int[] v1,v2,v;
+        static int[] v1,v2,v,rest;
         static char operation;
-        static int x,rest,nrZecimale;
+        static int x;
         static string bigNumber;
         static Stopwatch sw = new Stopwatch();
-        private static int[] vrest;
         private static bool isNegative = false;
-        private static bool esteMaiMare = false;
 
         static void Main(string[] args)
         {
             Write();
-            Console.Write("Primul numar: ");
-            bigNumber = ValidInput();
+            Console.Write("Primul numar:    ");
+            bigNumber = ValidInputNumber();
             v1 = MakeVectorFrom(bigNumber);
-            Console.Write("Operatia care doresti sa fie executat: ");
+            Console.Write("Operatia: ");
             operation = char.Parse(Console.ReadLine());
             Switch_And_Do(operation);
             Console.WriteLine();
@@ -44,7 +42,7 @@ namespace Operatii_cu_numere_mari
             else
             {
                 Console.Write("Al doilea numar: ");
-                bigNumber = ValidInput();
+                bigNumber = ValidInputNumber();
                 v2 = MakeVectorFrom(bigNumber);
                 switch (operation)
                 {
@@ -85,15 +83,26 @@ namespace Operatii_cu_numere_mari
 
         private static void Division()
         {
-            /*Console.WriteLine("Cu ce aproximare sa fie calculata impartirea?");
-            Console.Write("Numarul maxim a zecimalelor:");
-            nrZecimale = int.Parse(Console.ReadLine());*/
-            Console.WriteLine("****** Catul impartiri ******");
-            
+            rest = null;
             v = Impartire(v1, v2);
+            int nrZecimale=0;
             if (v!=null)
             {
+                if (rest != null)
+                {
+                    Console.WriteLine("Cu ce aproximare sa fie calculata impartirea?");
+                    Console.Write("Numarul maxim a zecimalelor:");
+                    nrZecimale = int.Parse(Console.ReadLine());
+                }
+
+                Console.WriteLine("****** Catul impartiri ******");
                 View(v);
+                if (nrZecimale != 0)
+                {
+                    Console.Write(".");
+                    v = Decimal(rest, v2, nrZecimale);
+                    View(v);
+                }
             }
             else
             {
@@ -102,13 +111,41 @@ namespace Operatii_cu_numere_mari
                 Console.WriteLine();
                 Switch_And_Do(operation);
             }
-            /*
-            if (rest!=0 && nrZecimale!=0)
+        }
+
+        private static int[] Decimal(int[] rest, int[] divizor, int nrZecimale)
+        {
+            rest = AdaugaNumar(rest, 0, 1);
+            int lenght = rest.Length;
+            int[] v = null;
+            
+            int s;
+            bool ok;
+            int i = 0;
+            while (i < nrZecimale)
             {
-                Console.Write(".");
-                v=Decimal(MakeVectorFrom(rest),x);
-                View(v);
-            }*/
+                ok = PrimulEsteMaiMare(rest, divizor);
+                if (ok)
+                {
+                    s = 0;
+                    while (PrimulEsteMaiMare(rest, divizor))
+                    {
+                        rest = Diferenta(rest, divizor);
+                        s++;
+                    }
+                    if (v == null) v = MakeVectorFrom(s);
+                    else v = AdaugaNumar(v, s, 1);
+                    if (rest.Length == 1 && rest[0] == 0) { rest = null; break; }
+                }
+                else
+                {
+                    if (v != null) v = AdaugaNumar(v, 0, 1);
+                }
+                rest = AdaugaNumar(rest, 0, 1);
+                i++;
+            }
+
+            return v;
         }
 
         private static int[] Impartire(int[] deimpartit, int[] divizor)
@@ -122,16 +159,17 @@ namespace Operatii_cu_numere_mari
             {
                 int[] r = null;
                 int i = 0;
-                bool ok = false;
+                bool ok;
                 do
                 {
+                    ok = false;
                     if (r == null)r = MakeVectorFrom(deimpartit[i]);
                     else r = AdaugaNumar(r, deimpartit[i], 1);
-                    ok = PrimulEsteMaiMare(r, v2);
+                    if (r != null) ok = PrimulEsteMaiMare(r, divizor);
                     if (ok)
                     {
                         int s = 0;
-                        while (PrimulEsteMaiMare(r, v2))
+                        while (PrimulEsteMaiMare(r, divizor))
                         {
                             r = Diferenta(r, divizor);
                             s++;
@@ -146,54 +184,10 @@ namespace Operatii_cu_numere_mari
                     }
                     i++;
                 } while (i < deimpartit.Length);
+                
+                rest = r;
                 return v;
             }
-        }
-
-        private static int[] Decimal(int[] v1, int n)
-        {
-            int lenght = v1.Length;
-            int[] v = new int[nrZecimale];
-            int[] vtemp = new int[nrZecimale];
-            int s;
-            int r = 0;
-            int j = 0;
-
-            int i = 0;
-            while (i < nrZecimale + lenght)
-            {
-                s = 0;
-                if (i<v1.Length)
-                {
-                    r += v1[i];
-                }
-                if (r >= n)
-                {
-                    while (r >= n)
-                    {
-                        r -= n; s++;
-                    }
-                    v[j] = s; j++;
-                }
-                else if (r == 0)
-                {
-                    while (vtemp[nrZecimale - 1]==0)
-                    {
-                        vtemp = new int[--nrZecimale];
-                        for (int idx = 0; idx < vtemp.Length; idx++)
-                        {
-                            vtemp[idx] = v[idx];
-                        }
-                        v = vtemp;
-                    }
-
-                    break;
-                }
-                r *= 10;
-                i++;
-            }
-
-            return v;
         }
        
         private static void Multiplication()
@@ -224,15 +218,15 @@ namespace Operatii_cu_numere_mari
             Console.WriteLine("Acesta este un program care poate efectua operatii cu numere mari.");
             Console.WriteLine("Operatiile valide sunt:");
             Console.WriteLine("+   adaugare");
-            Console.WriteLine("-   scadere                (Almost works)");
-            Console.WriteLine("*   inmultire ");
-            Console.WriteLine("/   impartie               (Coming soon)");
+            Console.WriteLine("-   scadere");
+            Console.WriteLine("*   inmultire");
+            Console.WriteLine("/   impartie");
             Console.WriteLine("p   ridicare la putere");
             Console.WriteLine("r   radacina patrata       (Coming soon) ");
             Console.WriteLine("f   factorial");
         }
 
-        private static string ValidInput()
+        private static string ValidInputNumber()
         {
             string onlyNumbers = @"^\d+$";
             string line;
@@ -242,6 +236,7 @@ namespace Operatii_cu_numere_mari
                 line = Console.ReadLine();
                 result = Regex.Match(line, onlyNumbers);
             } while (!result.Success);
+            
             return result.Value;
         }
 
@@ -295,6 +290,7 @@ namespace Operatii_cu_numere_mari
 
         private static int[] MakeVectorFrom(int num)
         {
+            if (num == 0) return null;
             int lenght = 0;
             int aux = num;
             int[] vtemp;
@@ -375,61 +371,6 @@ namespace Operatii_cu_numere_mari
                 }
             }
             return vtemp;
-        }
-
-        private static int[] ImpartireScalar(int[] v1, int n)
-        {
-            int lenght=v1.Length;
-            int[] v;
-            int[] vtemp;
-            if (n != 0)
-            {
-                v = new int[lenght];
-                int s = 0;
-                int r = 0;
-                int j = 0;
-                
-                for (int i = 0; i < v1.Length; i++)
-                {
-                    s = 0;
-                    r += v1[i];
-                    if (r >= n)
-                    {
-                        while (r>=n)
-                        {
-                            r -= n; s++;
-                        }
-                        v[j] = s;  j++;
-                    }
-                    else if (r==0)
-                    {
-                        v[j] = 0;  j++;
-                    }
-                    else
-                    {
-                        if (i+1!=v1.Length)
-                        {
-                            vtemp = new int[--lenght];
-                            for (int idx = 0; idx < vtemp.Length; idx++)
-                            {
-                                vtemp[idx] = v[idx];
-                            }
-                            v = vtemp;
-                        }
-                        
-                    }
-                    r *= 10;
-                }
-                rest = r/10; 
-            }
-            else
-            {
-                v = null;
-                Console.WriteLine("Nu putem divide cu zero");
-            }
-
-            return v;
-            
         }
 
         private static int[] InmultireCuScalar(int[] v1, int scalar)
