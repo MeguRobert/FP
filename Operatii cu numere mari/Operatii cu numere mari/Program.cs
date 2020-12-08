@@ -190,7 +190,7 @@ namespace Operatii_cu_numere_mari
         private static int[] Diferenta(int[] v1, int[] v2)
         {
 
-            if (!PrimulEsteMaiMare(v1, v2))
+            if (!FirstIsGreater(v1, v2))
             {
                 isNegative = true;
                 return Diferenta(v2, v1);
@@ -319,11 +319,11 @@ namespace Operatii_cu_numere_mari
             int i = 0;
             while (i < nrZecimale)
             {
-                ok = PrimulEsteMaiMare(rest, divizor);
+                ok = FirstIsGreater(rest, divizor);
                 if (ok)
                 {
                     s = 0;
-                    while (PrimulEsteMaiMare(rest, divizor))
+                    while (FirstIsGreater(rest, divizor))
                     {
                         rest = Diferenta(rest, divizor);
                         s++;
@@ -360,11 +360,11 @@ namespace Operatii_cu_numere_mari
                     ok = false;
                     if (r == null)r = MakeVectorFrom(deimpartit[i]);
                     else r = AdaugaNumar(r, deimpartit[i], 1);
-                    if (r != null) ok = PrimulEsteMaiMare(r, divizor);
+                    if (r != null) ok = FirstIsGreater(r, divizor);
                     if (ok)
                     {
                         int s = 0;
-                        while (PrimulEsteMaiMare(r, divizor))
+                        while (FirstIsGreater(r, divizor))
                         {
                             r = Diferenta(r, divizor);
                             s++;
@@ -428,12 +428,64 @@ namespace Operatii_cu_numere_mari
         private static void SquareRoot()
         {
             Console.WriteLine("****** Radacina patrata al numarului ******");
-            RadacinaPatrata(v1);
+            View(RadacinaPatrata(v1));
         }
 
-        private static void RadacinaPatrata(int[] v1)
+        private static int[] RadacinaPatrata(int[] num)
         {
+            int x,i,n;
+            int[] v1, v2, rest, result, aux, product;
+            bool lengthIsEven = num.Length % 2 == 0;
+            if (lengthIsEven)
+                x = 10 * v[0] + v[1];
+            else x = v[0];
+
+            n = (int)Math.Sqrt(x);
+            result = MakeVectorFrom(n);
+
+            v1 = MakeVectorFrom(x);
+            v2 = MakeVectorFrom(n*n);
+            rest = Diferenta(v1, v2);
             
+            //
+            if (lengthIsEven)i = 2;
+            else i = 1;
+
+
+
+            /* while (i<num.Length)
+             {
+                 result = AdaugaNumar(result, 0, 1);
+                 i += 2;
+             }*/
+            
+            while (i < num.Length)
+            {
+                if (rest[0]==0)
+                {
+                    v1 = MakeVectorFrom(v[i]);
+                }
+                else
+                {
+                    v1 = AdaugaNumar(rest, v[i], 1);
+                }
+                
+                v1 = AdaugaNumar(v1, v[i + 1], 1); 
+                aux = InmultireCuScalar(result, 2);
+                int testnum = 0;
+                do
+                {
+                    
+                    product = AdaugaNumar(aux, ++testnum, 1);
+                    product = InmultireCuScalar(product, testnum);
+
+                } while (FirstIsGreater(v1, product) && product != v1 );
+                rest = Diferenta(v1, v2);
+                testnum--;
+                result = AdaugaNumar(result, testnum, 1);
+                i += 2;
+            }
+            return result;
         }
 
         private static void Fact()
@@ -487,7 +539,7 @@ namespace Operatii_cu_numere_mari
         /*************************************************************
          *                        LOGICALS & OTHERS
          * ***********************************************************/
-        private static bool PrimulEsteMaiMare( int[] v1, int[] v2)
+        private static bool FirstIsGreater( int[] v1, int[] v2)
         {
             if (v1.Length < v2.Length) return false;
             else if (v1.Length == v2.Length)
