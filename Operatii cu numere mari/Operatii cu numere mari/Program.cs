@@ -10,7 +10,7 @@ namespace Operatii_cu_numere_mari
 {
     class Program
     {
-        static int[] v1,v2,v,rest;
+        static int[] v1,v2,v,rest;//parteFract
         static char operation;
         static int x;
         static string bigNumber;
@@ -458,8 +458,8 @@ namespace Operatii_cu_numere_mari
             int[] v1, v2, rest, result, aux, product;
             bool lengthIsEven = num.Length % 2 == 0;
             if (lengthIsEven)
-                x = 10 * v[0] + v[1];
-            else x = v[0];
+                x = 10 * num[0] + num[1];
+            else x = num[0];
 
             n = (int)Math.Sqrt(x);
             result = MakeVectorFrom(n);
@@ -473,25 +473,28 @@ namespace Operatii_cu_numere_mari
             else i = 1;
 
 
-
-            /* while (i<num.Length)
-             {
-                 result = AdaugaNumar(result, 0, 1);
-                 i += 2;
-             }*/
+            if ( i < num.Length && num[i]==0 && num[i+1]==0)
+            {
+                while (i < num.Length)
+                {
+                    result = AdaugaNumar(result, 0, 1);
+                    i += 2;
+                }
+            }
+           
             
             while (i < num.Length)
             {
                 if (rest[0]==0)
                 {
-                    v1 = MakeVectorFrom(v[i]);
+                    v1 = MakeVectorFrom(num[i]);
                 }
                 else
                 {
-                    v1 = AdaugaNumar(rest, v[i], 1);
+                    v1 = AdaugaNumar(rest, num[i], 1);
                 }
                 
-                v1 = AdaugaNumar(v1, v[i + 1], 1); 
+                v1 = AdaugaNumar(v1, num[i + 1], 1); 
                 aux = InmultireCuScalar(result, 2);
                 int testnum = 0;
                 do
