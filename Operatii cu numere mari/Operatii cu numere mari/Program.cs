@@ -20,10 +20,10 @@ namespace Operatii_cu_numere_mari
         static void Main(string[] args)
         {
             Write();
-            Console.Write("Primul numar:    ");
+            Console.Write("Primul numar:        ");
             bigNumber = ValidInputNumber();
             v1 = MakeVectorFrom(bigNumber);
-            Console.Write("Operatia: ");
+            Console.Write("Operatia:            ");
             operation = char.Parse(Console.ReadLine());
             Switch_And_Do(operation);
             Console.WriteLine();
@@ -41,16 +41,37 @@ namespace Operatii_cu_numere_mari
             Console.WriteLine("r   radacina patrata       (Coming soon) ");
             Console.WriteLine("f   factorial");
         }
-
+        /// <summary>
+        /// This method based on REGEX returns a valid decimal number
+        /// </summary>
+        /// <returns>
+        /// RETURNS:
+        /// <example>
+        /// 123
+        /// 1230
+        /// 101010
+        /// 109702654
+        /// 0
+        /// </example>
+        /// NOT RETURNS:
+        /// <example>
+        /// 0123
+        /// 0000 
+        /// </example>
+        /// </returns>
         private static string ValidInputNumber()
         {
-            string onlyNumbers = @"^\d+$";
+            
+            string onlyNumbers = "^([1-9]+(0*[1-9]*)*)?0?$";
             string line;
+            bool writetext = false;
             Match result;
             do
             {
+                if (writetext) Console.Write("Incearca din nou:    ");
                 line = Console.ReadLine();
                 result = Regex.Match(line, onlyNumbers);
+                writetext = true;
             } while (!result.Success);
 
             return result.Value;
@@ -99,7 +120,7 @@ namespace Operatii_cu_numere_mari
             }
             else
             {
-                Console.Write("Al doilea numar: ");
+                Console.Write("Al doilea numar:     ");
                 bigNumber = ValidInputNumber();
                 v2 = MakeVectorFrom(bigNumber);
                 switch (operation)
