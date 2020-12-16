@@ -10,9 +10,10 @@ namespace Operatii_cu_numere_mari
 {
     class Program
     {
-        static int[] v1,v2,v,rest;//parteFract
+        static int[] v1,v2,v,rest;
         static char operation;
         static int x;
+        static int nrZecimale = 0;
         static string bigNumber;
         static Stopwatch sw = new Stopwatch();
         private static bool isNegative = false;
@@ -38,7 +39,7 @@ namespace Operatii_cu_numere_mari
             Console.WriteLine("*   inmultire");
             Console.WriteLine("/   impartie");
             Console.WriteLine("p   ridicare la putere");
-            Console.WriteLine("r   radacina patrata       (Coming soon) ");
+            Console.WriteLine("r   radacina patrata");
             Console.WriteLine("f   factorial");
         }
         /// <summary>
@@ -71,6 +72,8 @@ namespace Operatii_cu_numere_mari
                 if (writetext) Console.Write("Incearca din nou:    ");
                 line = Console.ReadLine();
                 result = Regex.Match(line, onlyNumbers);
+                //Daca line (sirul de caractere sau numarul mare)
+                //se potriveste cu modelul initializat in  variabila onlyNumbers
                 writetext = true;
             } while (!result.Success);
 
@@ -221,37 +224,36 @@ namespace Operatii_cu_numere_mari
             max = v1.Length;
             min = v2.Length;
             int k = min;    //contorul pentru v2
-            int[] v = new int[max];
             int[] vtemp;
             for (int i = max - 1; i >= 0; i--)
             {
                 k--;
                 if (k >= 0)
                 {
-                    v[i] = v1[i] - v2[k];
+                    v1[i] = v1[i] - v2[k];
                 }
                 else
                 {
-                    v[i] = v1[i];
+                    v1[i] = v1[i];
                 }
-                if (v[i] < 0)
+                if (v1[i] < 0)
                 {
                     v1[i - 1]--;  //imprumut
-                    v[i] += 10;
+                    v1[i] += 10;
                 }
             }
-
+            
             /******** eliminarea 0-urilor de la inceputul vectorului ********/
-            while (v.Length > 1 && v[0] == 0)
+            while (v1.Length > 1 && v1[0] == 0)
             {
                 vtemp = new int[--max];
-                for (int i = 1; i < v.Length; i++)
+                for (int i = 1; i < v1.Length; i++)
                 {
-                    vtemp[i - 1] = v[i];
+                    vtemp[i - 1] = v1[i];
                 }
-                v = vtemp;
+                v1 = vtemp;
             }
-            return v;
+            return v1;
         }
 
         private static void Multiplication()
@@ -296,7 +298,7 @@ namespace Operatii_cu_numere_mari
         {
             rest = null;v = null;
             v = Impartire(v1, v2);
-            int nrZecimale=0;
+            
             if (v == null && rest == null)
             {
                 Console.WriteLine("Nu putem divide cu 0!");
@@ -448,21 +450,25 @@ namespace Operatii_cu_numere_mari
 
         private static void SquareRoot()
         {
+            rest = null;
             Console.WriteLine("****** Radacina patrata al numarului ******");
-            View(RadacinaPatrata(v1));
+            RadacinaPatrata(v1); 
+            
         }
 
-        private static int[] RadacinaPatrata(int[] num)
+        private static void RadacinaPatrata(int[] num)
         {
             int x,i,n;
-            int[] v1, v2, rest, result, aux, product;
+            int[] v1, v2, aux, product,parteaIntreaga;
             bool lengthIsEven = num.Length % 2 == 0;
+            bool isFraction = false;
+            product = null;
             if (lengthIsEven)
                 x = 10 * num[0] + num[1];
             else x = num[0];
 
             n = (int)Math.Sqrt(x);
-            result = MakeVectorFrom(n);
+            parteaIntreaga = MakeVectorFrom(n);
 
             v1 = MakeVectorFrom(x);
             v2 = MakeVectorFrom(n*n);
@@ -477,7 +483,7 @@ namespace Operatii_cu_numere_mari
             {
                 while (i < num.Length)
                 {
-                    result = AdaugaNumar(result, 0, 1);
+                    parteaIntreaga = AdaugaNumar(parteaIntreaga, 0, 1);
                     i += 2;
                 }
             }
@@ -495,23 +501,62 @@ namespace Operatii_cu_numere_mari
                 }
                 
                 v1 = AdaugaNumar(v1, num[i + 1], 1); 
-                aux = InmultireCuScalar(result, 2);
+                aux = InmultireCuScalar(parteaIntreaga, 2);
                 int testnum = 0;
                 do
                 {
-                    
+                    v2 = product;
                     product = AdaugaNumar(aux, ++testnum, 1);
                     product = InmultireCuScalar(product, testnum);
 
                 } while (FirstIsGreater(v1, product) && product != v1 );
                 rest = Diferenta(v1, v2);
                 testnum--;
-                result = AdaugaNumar(result, testnum, 1);
+                parteaIntreaga = AdaugaNumar(parteaIntreaga, testnum, 1);
                 i += 2;
             }
-            return result;
+            #region Parte fractionala
+            int[] numarReal = parteaIntreaga;
+            int[] parteFract = null;
+            product = null;
+            if (rest[0] != 0)
+            {
+                isFraction = true;
+                Console.WriteLine("Cu ce aproximare sa fie calculata impartirea?");
+                Console.Write("Numarul maxim a zecimalelor:");
+                nrZecimale = int.Parse(ValidInputNumber());
+                i = 0;
+                while (i < nrZecimale && rest[0]!=0)
+                {
+                    v1 = AdaugaNumar(rest, 0, 2);
+                    aux = InmultireCuScalar(numarReal, 2);
+                    int testnum = -1;
+                    bool condition = false;
+                    do
+                    {
+                        testnum++;
+                        v2 = product;
+                        product = AdaugaNumar(aux, testnum, 1);
+                        product = InmultireCuScalar(product, testnum);
+                    } while (FirstIsGreater(v1, product) && product != v1);
+                    rest = Diferenta(v1, v2);
+                    testnum--;
+                    if (parteFract == null) parteFract = MakeVectorFrom(testnum);
+                    else parteFract = AdaugaNumar(parteFract, testnum, 1);
+                    numarReal = AdaugaNumar( numarReal, testnum, 1);
+                    i ++;
+                }
+            }
+            #endregion
+            View(parteaIntreaga);
+            if (isFraction && nrZecimale!=0)
+            {
+                Console.Write(".");
+                View(parteFract);
+            }
+            
         }
-
+        
         private static void Fact()
         {
             Console.WriteLine("\n FACTORIAL");
